@@ -54,9 +54,9 @@ get-cards: func [
     /local c 
 ][ 
     c: collect [forall fhand [keep find fhand/1 kind]]
-    remove-each i c [none = i] 
-    forall c [append thand c/1]  
-    remove-each i fhand [if find/only c i [i]]
+    remove-each i c [none = i]  ;-- remove none values from collected
+    forall c [append thand c/1] ;-- append remaining values
+    remove-each i fhand [if find/only c i [i]]  ;-- remove the values in "From hand"
 ]
 
 ask-cards: func [
@@ -84,7 +84,7 @@ check-for-books: func [hand kind /local c][
     c: collect [
         forall hand [keep find hand/1 kind]
     ]
-    remove-each i c [none = i]  ;-- remove none values from collected
+    remove-each i c [none = i] 
     if 4 = length? c [
         either hand = player [pbooks: pbooks + 1][cbooks: cbooks + 1]
         remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
