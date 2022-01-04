@@ -1,4 +1,4 @@
-Red ["Go Fish"]
+Red [Title: "Go Fish"]
 
 do load %cards.red  ; From https://rosettacode.org/wiki/Playing_cards#Red
 
@@ -25,7 +25,7 @@ deal: func [num hand][
 ]
 
 clear-screen: does [
-    "clears console"
+    "clears the console"
     call/console either system/platform = 'Linux ["clear"]["cls"]
 ]
 
@@ -48,39 +48,43 @@ but-last: func [str][copy/part str (length? str) - 1]
 
 get-cards: func [
     "Transfers cards from one hand to another"
-    fhand "from"
-    thand "to"
+    fhand "from hand"
+    thand "to hand"
     kind "rank of cards"
-    /local c 
+    /local 
+        c "collected"
 ][ 
     c: collect [forall fhand [keep find fhand/1 kind]]
     remove-each i c [none = i]  ;-- remove none values from collected
     forall c [append thand c/1] ;-- append remaining values
-    remove-each i fhand [if find/only c i [i]]  ;-- remove the values in "From hand"
+    remove-each i fhand [if find/only c i [i]] 
 ]
 
 ask-cards: func [
-    fhand "from"
-    thand "to"
+    fhand "from hand"
+    thand "to hand"
     kind  "rank of cards"
     /local 
         a "value of ask"
-        b "value of kind"
 ][
     a: my-ask rejoin ["Do you have any " kind " s?"]
     if a = "q" [halt]
     either any [a = "y" a = "yes"][
-        b: but-last random/only thand
-        get-cards fhand thand kind  
-        show-cards
-        ask-cards fhand thand b ;-- if we get cards, we get to ask again
+        get-cards fhand thand kind 
+        show-cards  
+        ask-cards fhand thand but-last random/only thand
     ][
-        clear-and-show 0.6 gf 
+        clear-and-show 0.4 gf 
         go-fish 1 thand         
     ]
 ]
 
-check-for-books: func [hand kind /local c][
+check-for-books: func [
+    hand "from or to hand"
+    kind "rank of cards"
+    /local 
+        c "collected"
+    ][
     c: collect [
         forall hand [keep find hand/1 kind]
     ]
@@ -96,6 +100,7 @@ show-cards: does [
     print [newline "Player cards:" newline sort player newline]
     print ["Computer books:" cbooks]
     print ["Player books:" pbooks]
+    print [newline "Cards left in deck:" length? deck]
     prin newline
 ]
 
