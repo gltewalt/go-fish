@@ -44,7 +44,7 @@ go-fish: func [num hand][
 ]
 
 guess-from: func [hand guessed][  ;-- for simple A.I. 
-    "randomly picks from hand minus guessed"
+    "randomly picks from guessed minus hand"
     either empty? guessed [
         random/only hand 
     ][
