@@ -19,10 +19,8 @@ gf: {
 ;  Helper functions  -                                           
 ;---------------------
 
-but-last: func [str][
-    unless none = length? str [
+but-last: func [str][   ;-- not guarded yet
     copy/part str (length? str) - 1
-    ]
 ]
 
 clear-screen: does [
