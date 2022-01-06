@@ -1,7 +1,5 @@
 Red ["Go Fish"]
 
-do load %cards.red  ; From https://rosettacode.org/wiki/Playing_cards#Red
-
 ; c and p = computer and player
 chand: []
 cguesses: []
@@ -13,14 +11,11 @@ gf: {
     *   GO FISH   *
     ***************
 }
+pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"]
 
 ;---------------------
 ;  Helper functions  -                                           
 ;---------------------
-
-but-last: func [str][   ;-- not guarded yet
-    copy/part str (length? str) - 1
-]
 
 clear-screen: does [
     "clears the console"
@@ -41,7 +36,7 @@ deal-cards: func [num hand][
 ]
 
 find-in: func [blk str][
-    foreach i blk [if find but-last i str [return i]]
+    foreach i blk [if find i str [return i]]
 ]
 
 go-fish: func [num hand][
@@ -53,9 +48,19 @@ guess-from: func [hand guessed][  ;-- for simple A.I.
     either empty? guessed [
         random/only hand 
     ][
-        random/only difference hand guessed 
+        random/only difference guessed hand
     ]
 ]
+
+make-deck: function [] [
+    "adapted from https://rosettacode.org/wiki/Playing_cards#Red"
+	new-deck: make block! 52
+	foreach p pip [loop 4 [append/only new-deck p]] ;--
+	return new-deck
+]
+
+shuffle: function [deck [block!]] [deck: random deck]
+
 ;------------- end of helper functions -----------------
 
 transfer-cards: func [
@@ -87,11 +92,11 @@ computer-turn: func [
         transfer-cards fhand thand kind 
         show-cards
         check-for-books thand kind 
-        computer-turn fhand thand g: but-last guess-from thand cguesses
+        computer-turn fhand thand g: guess-from thand cguesses
+        append cguesses g   ;-- not working yet
 
     ][  
-        ; append cguesses g   ;-- not working yet
-        ; print ["CGUESSES is " cguesses]
+        print ["CGUESSES is " cguesses]
         clear-show 0.4 gf 
         go-fish 1 thand   
     ]
@@ -149,7 +154,7 @@ game-round: has [c p][
           -------------------
           }
 
-    computer-turn phand chand c: but-last guess-from chand cguesses
+    computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
     show-cards
 
@@ -159,12 +164,13 @@ game-round: has [c p][
           -------------------
           }
 
-    player-turn chand phand p: but-last find-in phand ask "Your guess: "
+    player-turn chand phand p: find-in phand ask "Your guess: "
     check-for-books phand p 
     show-cards
 ]
 
 demo: does [
+    deck: shuffle make-deck
     deal-cards 9 chand
     deal-cards 9 phand
     show-cards
