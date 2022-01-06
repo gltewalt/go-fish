@@ -49,10 +49,11 @@ go-fish: func [num hand][
 ]
 
 guess-from: func [hand guessed][  ;-- for simple A.I. 
+    "randomly picks from hand minus guessed"
     either empty? guessed [
         random/only hand 
     ][
-        random/only exclude hand guessed
+        random/only exclude hand guessed 
     ]
 ]
 ;------------- end of helper functions -----------------
@@ -89,7 +90,7 @@ computer-turn: func [
         computer-turn fhand thand g: but-last guess-from thand cguesses
 
     ][  
-        append cguesses g   ;-- not working yet, appending none
+        append cguesses g   ;-- not working yet
         clear-show 0.4 gf 
         go-fish 1 thand   
     ]
