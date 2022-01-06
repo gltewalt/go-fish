@@ -1,4 +1,4 @@
-Red [Title: "Go Fish"]
+Red ["Go Fish"]
 
 do load %cards.red  ; From https://rosettacode.org/wiki/Playing_cards#Red
 
@@ -7,6 +7,8 @@ computer: []
 player: []
 cbooks: 0
 pbooks: 0
+cguesses: []
+
 gf: {
     ***************
     *   GO FISH   *
@@ -17,11 +19,10 @@ gf: {
 ;  Helper functions  -                                           
 ;---------------------
 
-; For initial cards and go-fish. Overwrites deal from cards.red
-deal: func [num hand][ 
-    loop num [
-        append hand rejoin [trim/all form take deck]
-    ] 
+but-last: func [str][
+    unless none = length? str [
+    copy/part str (length? str) - 1
+    ]
 ]
 
 clear-screen: does [
@@ -29,21 +30,27 @@ clear-screen: does [
     call/console either system/platform = 'Linux ["clear"]["cls"]
 ]
 
-clear-and-show: func [duration str][
+clear-show: func [duration str][
     clear-screen
     print str 
     wait duration 
     clear-screen
 ]
 
-my-ask: func [s][print rejoin [s] input]
+; For initial cards and go-fish. Overwrites deal from cards.red
+deal: func [num hand][ 
+    loop num [
+        append hand rejoin [trim/all form take deck]
+    ] 
+]
+
+find-in: func [blk str][
+    foreach i blk [if find but-last i str [return i]]
+]
 
 go-fish: func [num hand][
     either 0 <> length? deck [deal num hand][exit]
 ]
-
-but-last: func [str][copy/part str (length? str) - 1]
-
 ;------------- end of helper functions -----------------
 
 get-cards: func [
@@ -53,11 +60,11 @@ get-cards: func [
     kind "rank of cards"
     /local 
         c "collected"
-][ 
+][
     c: collect [forall fhand [keep find fhand/1 kind]]
     remove-each i c [none = i]  ;-- remove none values from collected
-    forall c [append thand c/1] ;-- append remaining values
-    remove-each i fhand [if find/only c i [i]] 
+    forall c [append thand c/1] ;-- append remaining values to "to hand"
+    remove-each i fhand [if find/only c i [i]] ;-- remove those values from "from hand"
 ]
 
 ask-cards: func [
@@ -65,20 +72,38 @@ ask-cards: func [
     thand "to hand"
     kind  "rank of cards"
     /local 
-        a "value of ask"
+        a 
 ][
-    a: my-ask rejoin ["Do you have any " kind " s?"]
-    if a = "q" [halt]
-    either any [a = "y" a = "yes"][
-        get-cards fhand thand kind 
-        show-cards  
-        ask-cards fhand thand but-last random/only thand
-    ][
-        clear-and-show 0.4 gf 
-        go-fish 1 thand         
+    case [
+        fhand = player [   
+            a: ask rejoin ["Do you have any " kind " s?"]
+            if a = "x" [halt]
+            either any [a = "y" a = "yes"][
+                get-cards fhand thand kind 
+                show-cards
+                ask-cards fhand thand but-last random/only fhand
+                check-for-books thand kind 
+            ][
+                clear-show 0.4 gf 
+                go-fish 1 thand   
+            ]
+        ]
+        fhand = computer [  
+            either find-in fhand kind [
+                get-cards fhand thand kind  
+                show-cards
+                if find-in thand kind [ ;-- player has to have rank asked for
+                    ask-cards fhand thand ask "Your guess? "
+                ]
+                check-for-books thand kind
+            ][
+                clear-show 0.4 gf 
+                go-fish 1 thand 
+            ]
+        ]
     ]
 ]
-
+            
 check-for-books: func [
     hand "from or to hand"
     kind "rank of cards"
@@ -111,8 +136,7 @@ game-round: does [
           -------------------
           }
 
-    ask-cards player computer c: but-last random/only computer
-    check-for-books computer c
+    ask-cards player computer but-last random/only computer
     show-cards
 
     print {
@@ -121,8 +145,7 @@ game-round: does [
           -------------------
           }
 
-    ask-cards computer player p: but-last random/only player
-    check-for-books player p 
+    ask-cards computer player p: but-last find-in player ask "Your guess? "
     show-cards
 ]
 
@@ -132,7 +155,7 @@ demo: does [
     deal 9 player
     show-cards
     while [0 <> length? deck][
-        game-round
+        game-round  
     ]
     print "GAME OVER"
 ]
