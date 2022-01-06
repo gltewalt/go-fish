@@ -105,8 +105,8 @@ player-turn: func [
         transfer-cards fhand thand kind  
         show-cards
         check-for-books thand kind 
-        if find-in thand kind [ ;-- phand has to have rank asked for
-            player-turn fhand thand ask "Guess: "
+        if find-in thand kind [ ;-- player has to have rank asked for
+            player-turn fhand thand ask "Your guess: "
         ]
     ][
         clear-show 0.4 gf 
@@ -142,7 +142,7 @@ show-cards: does [
 game-round: has [c p][
     print {
           -------------------
-          -  chand TURN  -
+          -  COMPUTER TURN  -
           -------------------
           }
 
@@ -152,11 +152,11 @@ game-round: has [c p][
 
     print {
           -------------------
-          -   phand TURN   -
+          -   PLAYER TURN   -
           -------------------
           }
 
-    player-turn chand phand p: but-last find-in phand ask "Guess: "
+    player-turn chand phand p: but-last find-in phand ask "Your guess: "
     check-for-books phand p 
     show-cards
 ]
