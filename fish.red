@@ -40,15 +40,21 @@ find-in: func [blk str][
 ]
 
 go-fish: func [num hand][
-    either 0 <> length? deck [deal-cards num hand][exit]
+    either not empty? deck [deal-cards num hand][exit]
 ]
 
-guess-from: func [hand guessed][  ;-- for simple A.I. 
-    "randomly picks from guessed minus hand"
+guess-from: func [hand guessed][
+    {
+        Randomly picks from hand minus guessed.
+        
+        Simulates a person asking for different cards on
+        their next turn if their previous guess resulted
+        in a Go Fish.
+    }
     either empty? guessed [
         random/only hand 
     ][
-        random/only difference guessed hand
+        random/only difference hand guessed
     ]
 ]
 
