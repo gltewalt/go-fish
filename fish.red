@@ -3,9 +3,9 @@ Red ["Go Fish"]
 do load %cards.red  ; From https://rosettacode.org/wiki/Playing_cards#Red
 
 ; c and p = computer and player
-computer: []
+chand: []
 cguesses: []
-player: []
+phand: []
 cbooks: 0
 pbooks: 0
 gf: {
@@ -34,8 +34,7 @@ clear-show: func [duration str][
     clear-screen
 ]
 
-; For initial cards and go-fish. Overwrites deal from cards.red
-deal: func [num hand][ 
+deal-cards: func [num hand][ 
     loop num [
         append hand rejoin [trim/all form take deck]
     ] 
@@ -46,7 +45,7 @@ find-in: func [blk str][
 ]
 
 go-fish: func [num hand][
-    either 0 <> length? deck [deal num hand][exit]
+    either 0 <> length? deck [deal-cards num hand][exit]
 ]
 
 guess-from: func [hand guessed][  ;-- for simple A.I. 
@@ -58,7 +57,7 @@ guess-from: func [hand guessed][  ;-- for simple A.I.
 ]
 ;------------- end of helper functions -----------------
 
-get-cards: func [
+transfer-cards: func [
     "Transfers cards from one hand to another"
     fhand "from hand"
     thand "to hand"
@@ -84,7 +83,7 @@ computer-turn: func [
     if a = "x" [halt]
     either any [a = "y" a = "yes"][
         clear-show 0 ""
-        get-cards fhand thand kind 
+        transfer-cards fhand thand kind 
         show-cards
         check-for-books thand kind 
         computer-turn fhand thand g: but-last guess-from thand cguesses
@@ -103,10 +102,10 @@ player-turn: func [
 ][
     either find-in fhand kind [
         clear-show 0 ""
-        get-cards fhand thand kind  
+        transfer-cards fhand thand kind  
         show-cards
         check-for-books thand kind 
-        if find-in thand kind [ ;-- player has to have rank asked for
+        if find-in thand kind [ ;-- phand has to have rank asked for
             player-turn fhand thand ask "Guess: "
         ]
     ][
@@ -126,14 +125,14 @@ check-for-books: func [
     ]
     remove-each i c [none = i] 
     if 4 = length? c [
-        either hand = player [pbooks: pbooks + 1][cbooks: cbooks + 1]
+        either hand = phand [pbooks: pbooks + 1][cbooks: cbooks + 1]
         remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
     ]
 ]
 
 show-cards: does [
-    ;print [newline "Computer cards:" newline sort computer newline]
-    print [newline "Player cards:" newline sort player newline]
+    ;print [newline "Computer cards:" newline sort chand newline]
+    print [newline "Player cards:" newline sort phand newline]
     print ["Computer books:" cbooks]
     print ["Player books:" pbooks]
     print [newline "Cards left in deck:" length? deck]
@@ -143,28 +142,28 @@ show-cards: does [
 game-round: has [c p][
     print {
           -------------------
-          -  COMPUTER TURN  -
+          -  chand TURN  -
           -------------------
           }
 
-    computer-turn player computer c: but-last guess-from computer cguesses
-    check-for-books computer c
+    computer-turn phand chand c: but-last guess-from chand cguesses
+    check-for-books chand c
     show-cards
 
     print {
           -------------------
-          -   PLAYER TURN   -
+          -   phand TURN   -
           -------------------
           }
 
-    player-turn computer player p: but-last find-in player ask "Guess: "
-    check-for-books player p 
+    player-turn chand phand p: but-last find-in phand ask "Guess: "
+    check-for-books phand p 
     show-cards
 ]
 
 demo: does [
-    deal 9 computer
-    deal 9 player
+    deal-cards 9 chand
+    deal-cards 9 phand
     show-cards
     while [0 <> length? deck][
         game-round  
