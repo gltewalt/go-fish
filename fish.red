@@ -53,7 +53,7 @@ guess-from: func [hand guessed][  ;-- for simple A.I.
     either empty? guessed [
         random/only hand 
     ][
-        random/only exclude hand guessed 
+        random/only difference hand guessed 
     ]
 ]
 ;------------- end of helper functions -----------------
@@ -90,7 +90,8 @@ computer-turn: func [
         computer-turn fhand thand g: but-last guess-from thand cguesses
 
     ][  
-        append cguesses g   ;-- not working yet
+        ; append cguesses g   ;-- not working yet
+        ; print ["CGUESSES is " cguesses]
         clear-show 0.4 gf 
         go-fish 1 thand   
     ]
@@ -101,6 +102,7 @@ player-turn: func [
     thand "to hand"
     kind  "rank of cards"
 ][
+    clear-show 0 ""
     either find-in fhand kind [
         clear-show 0 ""
         transfer-cards fhand thand kind  
