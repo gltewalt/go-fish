@@ -51,6 +51,7 @@ go-fish: func [num hand][
 
 guess-from: func [hand guessed][  ;-- for simple A.I. 
     either empty? guessed [
+        print "IN GUESS-FROM"
         random/only hand 
     ][
         random/only exclude hand guessed
@@ -72,46 +73,89 @@ get-cards: func [
     remove-each i fhand [if find/only c i [i]] ;-- remove those values from "from hand"
 ]
 
-ask-cards: func [
+computer-turn: func [
     fhand "from hand"
     thand "to hand"
     kind  "rank of cards"
     /local 
         a 
+        g
 ][
-    ;-- split this into computer-turn and player-turn funcs?
-    case [
-        fhand = player [   
-            a: ask rejoin ["Do you have any " kind " s? "]
-            if a = "x" [halt]
-            either any [a = "y" a = "yes"][
-                clear-show 0 ""
-                get-cards fhand thand kind 
-                show-cards
-                check-for-books thand kind 
-                ask-cards fhand thand but-last random/only fhand
+    a: ask rejoin ["Do you have any " kind " s? "]
+    if a = "x" [halt]
+    either any [a = "y" a = "yes"][
+        clear-show 0 ""
+        get-cards fhand thand kind 
+        show-cards
+        check-for-books thand kind 
+        computer-turn fhand thand g: but-last guess-from thand cguesses
 
-            ][  
-                clear-show 0.4 gf 
-                go-fish 1 thand   
-            ]
-        ]
-        fhand = computer [  
-            either find-in fhand kind [
-                clear-show 0 ""
-                get-cards fhand thand kind  
-                show-cards
-                check-for-books thand kind 
-                if find-in thand kind [ ;-- player has to have rank asked for
-                    ask-cards fhand thand ask "Guess: "
-                ]
-            ][
-                clear-show 0.4 gf 
-                go-fish 1 thand 
-            ]
-        ]
+    ][  
+        append cguesses g   ;-- not working yet, appending none
+        clear-show 0.4 gf 
+        go-fish 1 thand   
     ]
 ]
+
+player-turn: func [
+    fhand "from hand"
+    thand "to hand"
+    kind  "rank of cards"
+][
+    either find-in fhand kind [
+        clear-show 0 ""
+        get-cards fhand thand kind  
+        show-cards
+        check-for-books thand kind 
+        if find-in thand kind [ ;-- player has to have rank asked for
+            player-turn fhand thand ask "Guess: "
+        ]
+    ][
+        clear-show 0.4 gf 
+        go-fish 1 thand 
+    ]
+]
+
+; ask-cards: func [
+;     fhand "from hand"
+;     thand "to hand"
+;     kind  "rank of cards"
+;     /local 
+;         a 
+; ][
+;     ;-- split this into computer-turn and player-turn funcs?
+;     case [
+;         fhand = player [   
+;             a: ask rejoin ["Do you have any " kind " s? "]
+;             if a = "x" [halt]
+;             either any [a = "y" a = "yes"][
+;                 clear-show 0 ""
+;                 get-cards fhand thand kind 
+;                 show-cards
+;                 check-for-books thand kind 
+;                 ask-cards fhand thand but-last random/only fhand
+
+;             ][  
+;                 clear-show 0.4 gf 
+;                 go-fish 1 thand   
+;             ]
+;         ]
+;         fhand = computer [  
+;             either find-in fhand kind [
+;                 clear-show 0 ""
+;                 get-cards fhand thand kind  
+;                 show-cards
+;                 check-for-books thand kind 
+;                 if find-in thand kind [ ;-- player has to have rank asked for
+;                     ask-cards fhand thand ask "Guess: "
+;                 ]
+;             ][
+;                 clear-show 0.4 gf 
+;                 go-fish 1 thand 
+;             ]
+;         ]
+;     ]
+; ]
             
 check-for-books: func [
     hand "from or to hand"
@@ -145,7 +189,7 @@ game-round: has [c p][
           -------------------
           }
 
-    ask-cards player computer c: but-last random/only computer
+    computer-turn player computer c: but-last guess-from computer cguesses
     check-for-books computer c
     show-cards
 
@@ -155,7 +199,7 @@ game-round: has [c p][
           -------------------
           }
 
-    ask-cards computer player p: but-last find-in player ask "Guess: "
+    player-turn computer player p: but-last find-in player ask "Guess: "
     check-for-books player p 
     show-cards
 ]
