@@ -107,6 +107,7 @@ player-turn: func [
     thand "to hand"
     kind  "rank of cards"
 ][
+    if empty? phand [go-fish 1 phand]
     clear-show 0 ""
     either find-in fhand kind [
         clear-show 0 ""
@@ -165,7 +166,6 @@ game-round: has [c p][
           -   PLAYER TURN   -
           -------------------
           }
-    if empty? phand [go-fish 1 phand]
     player-turn chand phand p: find-in phand ask "Your guess: "
     check-for-books phand p 
     clear-show 0 ""
