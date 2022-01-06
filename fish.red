@@ -76,9 +76,10 @@ ask-cards: func [
 ][
     case [
         fhand = player [   
-            a: ask rejoin ["Do you have any " kind " s?"]
+            a: ask rejoin ["Do you have any " kind " s? "]
             if a = "x" [halt]
             either any [a = "y" a = "yes"][
+                clear-show 0 ""
                 get-cards fhand thand kind 
                 show-cards
                 ask-cards fhand thand but-last random/only fhand
@@ -90,6 +91,7 @@ ask-cards: func [
         ]
         fhand = computer [  
             either find-in fhand kind [
+                clear-show 0 ""
                 get-cards fhand thand kind  
                 show-cards
                 if find-in thand kind [ ;-- player has to have rank asked for
