@@ -89,8 +89,8 @@ computer-turn: func [
     if a = "x" [halt]
     either any [a = "y" a = "yes"][
         clear-show 0 ""
-        check-for-books thand kind 
         transfer-cards fhand thand kind 
+        check-for-books thand kind
         show-cards
         computer-turn fhand thand g: guess-from thand cguesses
         append cguesses g   ;-- not working yet
@@ -106,14 +106,14 @@ player-turn: func [
     thand "to hand"
     kind  "rank of cards"
 ][
-    clear-show 0 ""
-    check-for-books thand kind 
     either find-in fhand kind [
-        transfer-cards fhand thand kind  
+        clear-show 0 ""
+        transfer-cards fhand thand kind 
+        check-for-books thand kind
         show-cards
         if find-in thand kind [ ;-- player has to have rank asked for
-            check-for-books thand kind 
             player-turn fhand thand ask "Your guess: "
+            check-for-books thand kind 
         ]
     ][
         clear-show 0.4 gf 
