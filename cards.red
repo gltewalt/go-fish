@@ -1,6 +1,6 @@
 Red [
 	Title: "Playing Cards"
-	Note: {From https://rosettacode.org/wiki/Playing_cards#Red}
+	Note: "Taken from https://rosettacode.org/wiki/Playing_cards#Red"
 ]
  
 pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"]
