@@ -89,14 +89,13 @@ computer-turn: func [
     if a = "x" [halt]
     either any [a = "y" a = "yes"][
         clear-show 0 ""
+        check-for-books thand kind 
         transfer-cards fhand thand kind 
         show-cards
-        check-for-books thand kind 
         computer-turn fhand thand g: guess-from thand cguesses
         append cguesses g   ;-- not working yet
 
     ][  
-        print ["CGUESSES is " cguesses]
         clear-show 0.4 gf 
         go-fish 1 thand   
     ]
@@ -107,13 +106,11 @@ player-turn: func [
     thand "to hand"
     kind  "rank of cards"
 ][
-    if empty? phand [go-fish 1 phand]
     clear-show 0 ""
+    check-for-books thand kind 
     either find-in fhand kind [
-        clear-show 0 ""
         transfer-cards fhand thand kind  
         show-cards
-        check-for-books thand kind 
         if find-in thand kind [ ;-- player has to have rank asked for
             check-for-books thand kind 
             player-turn fhand thand ask "Your guess: "
@@ -150,6 +147,7 @@ show-cards: does [
 ]
 
 game-round: has [c p][
+    if empty? chand [go-fish 1 chand]
     print {
           -------------------
           -  COMPUTER TURN  -
@@ -158,9 +156,9 @@ game-round: has [c p][
 
     computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
-    clear-show 0 ""
     show-cards
 
+    if empty? phand [go-fish 1 phand]
     print {
           -------------------
           -   PLAYER TURN   -
@@ -168,7 +166,6 @@ game-round: has [c p][
           }
     player-turn chand phand p: find-in phand ask "Your guess: "
     check-for-books phand p 
-    clear-show 0 ""
     show-cards
 ]
 
