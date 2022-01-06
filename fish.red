@@ -114,6 +114,7 @@ player-turn: func [
         show-cards
         check-for-books thand kind 
         if find-in thand kind [ ;-- player has to have rank asked for
+            check-for-books thand kind 
             player-turn fhand thand ask "Your guess: "
         ]
     ][
@@ -156,6 +157,7 @@ game-round: has [c p][
 
     computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
+    clear-show 0 ""
     show-cards
 
     print {
@@ -163,9 +165,10 @@ game-round: has [c p][
           -   PLAYER TURN   -
           -------------------
           }
-
+    if empty? phand [go-fish 1 phand]
     player-turn chand phand p: find-in phand ask "Your guess: "
     check-for-books phand p 
+    clear-show 0 ""
     show-cards
 ]
 
