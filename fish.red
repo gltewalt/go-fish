@@ -4,11 +4,10 @@ do load %cards.red  ; From https://rosettacode.org/wiki/Playing_cards#Red
 
 ; c and p = computer and player
 computer: []
+cguesses: []
 player: []
 cbooks: 0
 pbooks: 0
-cguesses: []
-
 gf: {
     ***************
     *   GO FISH   *
@@ -50,11 +49,11 @@ go-fish: func [num hand][
     either 0 <> length? deck [deal num hand][exit]
 ]
 
-guess-from: func [hand blk][  ;-- simple A.I.
-    either empty? blk [
+guess-from: func [hand guessed][  ;-- for simple A.I. 
+    either empty? guessed [
         random/only hand 
     ][
-        random/only exclude hand blk
+        random/only exclude hand guessed
     ]
 ]
 ;------------- end of helper functions -----------------
@@ -80,6 +79,7 @@ ask-cards: func [
     /local 
         a 
 ][
+    ;-- split this into computer-turn and player-turn funcs?
     case [
         fhand = player [   
             a: ask rejoin ["Do you have any " kind " s? "]
@@ -88,9 +88,10 @@ ask-cards: func [
                 clear-show 0 ""
                 get-cards fhand thand kind 
                 show-cards
-                ask-cards fhand thand but-last random/only fhand
                 check-for-books thand kind 
-            ][
+                ask-cards fhand thand but-last random/only fhand
+
+            ][  
                 clear-show 0.4 gf 
                 go-fish 1 thand   
             ]
@@ -100,10 +101,10 @@ ask-cards: func [
                 clear-show 0 ""
                 get-cards fhand thand kind  
                 show-cards
+                check-for-books thand kind 
                 if find-in thand kind [ ;-- player has to have rank asked for
-                    ask-cards fhand thand ask "Your guess? "
+                    ask-cards fhand thand ask "Guess: "
                 ]
-                check-for-books thand kind
             ][
                 clear-show 0.4 gf 
                 go-fish 1 thand 
@@ -129,7 +130,7 @@ check-for-books: func [
 ]
 
 show-cards: does [
-    print [newline "Computer cards:" newline sort computer newline]
+    ;print [newline "Computer cards:" newline sort computer newline]
     print [newline "Player cards:" newline sort player newline]
     print ["Computer books:" cbooks]
     print ["Player books:" pbooks]
@@ -137,14 +138,15 @@ show-cards: does [
     prin newline
 ]
 
-game-round: does [
+game-round: has [c p][
     print {
           -------------------
           -  COMPUTER TURN  -
           -------------------
           }
 
-    ask-cards player computer but-last random/only computer
+    ask-cards player computer c: but-last random/only computer
+    check-for-books computer c
     show-cards
 
     print {
@@ -153,19 +155,19 @@ game-round: does [
           -------------------
           }
 
-    ask-cards computer player p: but-last find-in player ask "Your guess? "
+    ask-cards computer player p: but-last find-in player ask "Guess: "
+    check-for-books player p 
     show-cards
 ]
 
 demo: does [
-    random/seed now 
     deal 9 computer
     deal 9 player
     show-cards
     while [0 <> length? deck][
         game-round  
     ]
-    print "GAME OVER"
+    print ["GAME OVER" newline "No more cards"]
 ]
 
 demo
