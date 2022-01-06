@@ -51,6 +51,14 @@ find-in: func [blk str][
 go-fish: func [num hand][
     either 0 <> length? deck [deal num hand][exit]
 ]
+
+guess-from: func [hand blk][  ;-- simple A.I.
+    either empty? blk [
+        random/only hand 
+    ][
+        random/only exclude hand blk
+    ]
+]
 ;------------- end of helper functions -----------------
 
 get-cards: func [
