@@ -12,6 +12,7 @@ gf: {
     ***************
 }
 pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"]
+pile: []
 
 ;---------------------
 ;  Helper functions  -                                           
@@ -40,7 +41,11 @@ find-in: func [blk str][
 ]
 
 go-fish: func [num hand][
-    either not empty? deck [deal-cards num hand][exit]
+    either not empty? deck [
+        deal-cards num hand
+    ][
+        append hand rejoin [trim/all form take pile]
+    ]
 ]
 
 guess-from: func [hand guessed][
@@ -99,7 +104,7 @@ computer-turn: func [
         clear-show 0 ""
         show-cards
         computer-turn fhand thand g: guess-from thand cguesses
-        append cguesses g   ;-- not working yet
+        append cguesses g  
 
     ][  
         clear-show 0.4 gf 
@@ -142,20 +147,17 @@ check-for-books: func [
     if 4 = length? c [
         either hand = phand [pbooks: pbooks + 1][cbooks: cbooks + 1]
         remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
+        forall c [append pile c/1]
     ]
 ]
 
 show-cards: does [
-    ;print [newline "Computer cards:" newline sort chand newline]
     print [newline "Player cards:" newline sort phand newline]
     print ["Computer books:" cbooks]
-    print ["Player books:" pbooks]
-    print [newline "Cards left in deck:" length? deck]
-    prin newline
+    print ["Player books:" pbooks newline]
 ]
 
 game-round: has [c p][
-    if empty? chand [go-fish 1 chand]
     print {
           -------------------
           -  COMPUTER TURN  -
@@ -164,9 +166,9 @@ game-round: has [c p][
 
     computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
+    if empty? chand [go-fish 1 chand]
     show-cards
 
-    if empty? phand [go-fish 1 phand]
     print {
           -------------------
           -   PLAYER TURN   -
@@ -174,6 +176,7 @@ game-round: has [c p][
           }
     player-turn chand phand p: find-in phand ask "Your guess: "
     check-for-books phand p 
+    if empty? phand [go-fish 1 phand]
     show-cards
 ]
 
@@ -182,10 +185,12 @@ demo: does [
     deal-cards 9 chand
     deal-cards 9 phand
     show-cards
-    while [0 <> length? deck][
+    while [cbooks + pbooks <> 13][
         game-round  
     ]
-    print ["GAME OVER" newline "No more cards"]
+    clear-show 0 ""
+    print "GAME OVER" 
+    print [newline "Computer books:" cbooks newline "Player books:" cbooks]
 ]
 
 demo
