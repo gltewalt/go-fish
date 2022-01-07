@@ -44,7 +44,8 @@ go-fish: func [num hand][
     either not empty? deck [
         deal-cards num hand
     ][
-        append hand rejoin [trim/all form take pile]
+        ; take from pile if deck is empty
+        append hand rejoin [trim/all form take pile] 
     ]
 ]
 
@@ -147,7 +148,7 @@ check-for-books: func [
     if 4 = length? c [
         either hand = phand [pbooks: pbooks + 1][cbooks: cbooks + 1]
         remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
-        forall c [append pile c/1]
+        forall c [append pile c/1]  ;-- append discarded book to the pile
     ]
 ]
 
