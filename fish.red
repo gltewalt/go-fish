@@ -175,7 +175,8 @@ game-round: has [c p][
           -   PLAYER TURN   -
           -------------------
           }
-    player-turn chand phand p: find-in phand ask "Your guess: "
+    p: ask "Your guess: "
+    either p = "x" [halt][player-turn chand phand find-in phand p]
     check-for-books phand p 
     if empty? phand [go-fish 1 phand]
     show-cards
@@ -191,7 +192,7 @@ demo: does [
     ]
     clear-show 0 ""
     print "GAME OVER" 
-    print [newline "Computer books:" cbooks newline "Player books:" cbooks]
+    print [newline "Computer books:" cbooks newline "Player books:" pbooks]
 ]
  
 demo
