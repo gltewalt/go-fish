@@ -167,9 +167,12 @@ game-round: has [c p][
           -------------------
           }
  
+    if empty? chand [
+        go-fish 1 chand
+        show-cards
+    ]
     computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
-    if empty? chand [go-fish 1 chand]
     show-cards
  
     print {
@@ -177,10 +180,14 @@ game-round: has [c p][
           -   PLAYER TURN   -
           -------------------
           }
+
+    if empty? phand [
+        go-fish 1 phand
+        show-cards
+    ]
     p: ask "Your guess: "
     either p = "x" [halt][player-turn chand phand find-in phand p]
     check-for-books phand p 
-    if empty? phand [go-fish 1 phand]
     show-cards
 ]
  
