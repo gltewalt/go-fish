@@ -118,6 +118,7 @@ player-turn: func [
     /local
         p 
 ][
+    if empty? fhand [go-fish 3 fhand]
     either find-in fhand kind [
         check-for-books thand kind
         transfer-cards fhand thand kind 
@@ -138,7 +139,7 @@ check-for-books: func [
     kind "rank of cards"
     /local 
         c "collected"
-    ][
+][
     c: collect [
         forall hand [keep find hand/1 kind]
     ]
@@ -165,7 +166,7 @@ game-round: has [c p][
           }
  
     if empty? chand [
-        go-fish 1 chand
+        go-fish 3 chand
         show-cards
     ]
     computer-turn phand chand c: guess-from chand cguesses
@@ -179,7 +180,7 @@ game-round: has [c p][
           }
 
     if empty? phand [
-        go-fish 1 phand
+        go-fish 3 phand
         show-cards
     ]
     p: ask "Your guess: "
@@ -193,12 +194,12 @@ demo: does [
     deal-cards 9 chand
     deal-cards 9 phand
     show-cards
-    while [cbooks + pbooks <> 13][
+    while [cbooks + pbooks < 13][
         game-round  
     ]
     clear-and-show 0 ""
     print "GAME OVER" 
     print [newline "Computer books:" cbooks newline "Player books:" pbooks]
 ]
- 
-demo
+
+demo 
