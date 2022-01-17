@@ -126,7 +126,8 @@ player-turn: func [
         clear-show 0 ""
         show-cards
         if find-in thand kind [ ;-- player has to have rank asked for
-            player-turn fhand thand p: ask "Your guess: "
+            p: ask "Your guess: "
+            either p = "x" [halt][player-turn fhand thand p]
             check-for-books thand p 
         ]
     ][
