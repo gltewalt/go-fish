@@ -102,7 +102,6 @@ computer-turn: func [
     either any [a = "y" a = "yes"][
         check-for-books thand kind
         transfer-cards fhand thand kind
-        clear-and-show 0 ""
         show-cards
         computer-turn fhand thand guess-from thand cguesses
     ][  
@@ -122,7 +121,6 @@ player-turn: func [
     either find-in fhand kind [
         check-for-books thand kind
         transfer-cards fhand thand kind 
-        clear-and-show 0 ""
         show-cards
         if find-in thand kind [ ;-- player has to have rank asked for
             p: ask "Your guess: "
