@@ -1,5 +1,5 @@
 Red ["Go Fish"]
-
+ 
 ; c and p = computer and player
 chand: []
 cguesses: []
@@ -13,33 +13,33 @@ gf: {
 }
 pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"]
 pile: []
-
+ 
 ;---------------------
 ;  Helper functions  -                                           
 ;---------------------
-
+ 
 clear-screen: does [
     "clears the console"
     call/console either system/platform = 'Linux ["clear"]["cls"]
 ]
-
+ 
 clear-show: func [duration str][
     clear-screen
     print str 
     wait duration 
     clear-screen
 ]
-
+ 
 deal-cards: func [num hand][ 
     loop num [
         append hand rejoin [trim/all form take deck]
     ] 
 ]
-
+ 
 find-in: func [blk str][
     foreach i blk [if find i str [return i]]
 ]
-
+ 
 go-fish: func [num hand][
     either not empty? deck [
         deal-cards num hand
@@ -48,33 +48,34 @@ go-fish: func [num hand][
         append hand rejoin [trim/all form take pile] 
     ]
 ]
-
+ 
 guess-from: func [hand guessed][
     {
         Randomly picks from hand minus guessed.
-        
+ 
         Simulates a person asking for different cards on
         their next turn if their previous guess resulted
         in a Go Fish.
     }
-    either empty? guessed [
+    random/seed now/time
+    either any [empty? guessed empty? exclude hand guessed][
         random/only hand 
     ][
-        random/only difference hand guessed
+        random/only exclude hand guessed
     ]
 ]
-
+ 
 make-deck: function [] [
-    "adapted from https://rosettacode.org/wiki/Playing_cards#Red"
-	new-deck: make block! 52
-	foreach p pip [loop 4 [append/only new-deck p]] ;--
-	return new-deck
+    "make-deck and shuffle from https://rosettacode.org/wiki/Playing_cards#Red"
+     new-deck: make block! 52
+     foreach p pip [loop 4 [append/only new-deck p]]
+     return new-deck
 ]
-
+ 
 shuffle: function [deck [block!]] [deck: random deck]
-
+ 
 ;------------- end of helper functions -----------------
-
+ 
 transfer-cards: func [
     "Transfers cards from one hand to another"
     fhand "from hand"
@@ -88,7 +89,7 @@ transfer-cards: func [
     forall c [append thand c/1] ;-- append remaining values to "to hand"
     remove-each i fhand [if find/only c i [i]] ;-- remove those values from "from hand"
 ]
-
+ 
 computer-turn: func [
     fhand "from hand"
     thand "to hand"
@@ -105,14 +106,13 @@ computer-turn: func [
         clear-show 0 ""
         show-cards
         computer-turn fhand thand g: guess-from thand cguesses
-        append cguesses g  
-
     ][  
         clear-show 0.4 gf 
         go-fish 1 thand   
+        append cguesses kind 
     ]
 ]
-
+ 
 player-turn: func [
     fhand "from hand"
     thand "to hand"
@@ -134,7 +134,7 @@ player-turn: func [
         go-fish 1 thand 
     ]
 ]
-
+ 
 check-for-books: func [
     hand "from or to hand"
     kind "rank of cards"
@@ -151,25 +151,25 @@ check-for-books: func [
         forall c [append pile c/1]  ;-- append discarded book to the pile
     ]
 ]
-
+ 
 show-cards: does [
     print [newline "Player cards:" newline sort phand newline]
     print ["Computer books:" cbooks]
     print ["Player books:" pbooks newline]
 ]
-
+ 
 game-round: has [c p][
     print {
           -------------------
           -  COMPUTER TURN  -
           -------------------
           }
-
+ 
     computer-turn phand chand c: guess-from chand cguesses
     check-for-books chand c
     if empty? chand [go-fish 1 chand]
     show-cards
-
+ 
     print {
           -------------------
           -   PLAYER TURN   -
@@ -180,7 +180,7 @@ game-round: has [c p][
     if empty? phand [go-fish 1 phand]
     show-cards
 ]
-
+ 
 demo: does [
     deck: shuffle make-deck
     deal-cards 9 chand
@@ -193,5 +193,5 @@ demo: does [
     print "GAME OVER" 
     print [newline "Computer books:" cbooks newline "Player books:" cbooks]
 ]
-
+ 
 demo
