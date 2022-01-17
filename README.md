@@ -2,6 +2,6 @@
 A "work in progress" example for https://rosettacode.org/wiki/Go_Fish
 
 TODO: 
-- add a card to a hand if player is out of cards
+- no repeat of immediate previous guess by computer
 
 ![](/data/f.png)
