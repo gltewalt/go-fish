@@ -23,7 +23,7 @@ clear-screen: does [
     call/console either system/platform = 'Linux ["clear"]["cls"]
 ]
  
-clear-show: func [duration str][
+clear-and-show: func [duration str][
     clear-screen
     print str 
     wait duration 
@@ -103,11 +103,11 @@ computer-turn: func [
     either any [a = "y" a = "yes"][
         check-for-books thand kind
         transfer-cards fhand thand kind
-        clear-show 0 ""
+        clear-and-show 0 ""
         show-cards
         computer-turn fhand thand g: guess-from thand cguesses
     ][  
-        clear-show 0.4 gf 
+        clear-and-show 0.4 gf 
         go-fish 1 thand   
         append cguesses kind 
     ]
@@ -123,7 +123,7 @@ player-turn: func [
     either find-in fhand kind [
         check-for-books thand kind
         transfer-cards fhand thand kind 
-        clear-show 0 ""
+        clear-and-show 0 ""
         show-cards
         if find-in thand kind [ ;-- player has to have rank asked for
             p: ask "Your guess: "
@@ -131,7 +131,7 @@ player-turn: func [
             check-for-books thand p 
         ]
     ][
-        clear-show 0.4 gf 
+        clear-and-show 0.4 gf 
         go-fish 1 thand 
     ]
 ]
@@ -154,6 +154,7 @@ check-for-books: func [
 ]
  
 show-cards: does [
+    clear-and-show 0 ""
     print [newline "Player cards:" newline sort phand newline]
     print ["Computer books:" cbooks]
     print ["Player books:" pbooks newline]
@@ -191,7 +192,7 @@ demo: does [
     while [cbooks + pbooks <> 13][
         game-round  
     ]
-    clear-show 0 ""
+    clear-and-show 0 ""
     print "GAME OVER" 
     print [newline "Computer books:" cbooks newline "Player books:" pbooks]
 ]
