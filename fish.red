@@ -96,7 +96,6 @@ computer-turn: func [
     kind  "rank of cards"
     /local 
         a 
-        g
 ][
     a: ask rejoin ["Do you have any " kind " s? "]
     if a = "x" [halt]
@@ -105,7 +104,7 @@ computer-turn: func [
         transfer-cards fhand thand kind
         clear-and-show 0 ""
         show-cards
-        computer-turn fhand thand g: guess-from thand cguesses
+        computer-turn fhand thand guess-from thand cguesses
     ][  
         clear-and-show 0.4 gf 
         go-fish 1 thand   
