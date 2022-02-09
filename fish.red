@@ -1,7 +1,9 @@
-Red ["Go Fish"]
+Red [
+    Title:  "Go Fish"
+    Author: "gltewalt"
+]
  
-; c and p = computer and player
-chand: []
+chand: []   ;-- c and p = computer and player
 cguesses: []
 phand: []
 cbooks: 0
@@ -11,8 +13,8 @@ gf: {
     *   GO FISH   *
     ***************
 }
-pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"]
-pile: []
+pip: ["a" "2" "3" "4" "5" "6" "7" "8" "9" "10" "j" "q" "k"] ;-- suits are not relevant
+pile: []    ;-- where discarded cards go
  
 ;---------------------
 ;  Helper functions  -                                           
@@ -24,6 +26,11 @@ clear-screen: does [
 ]
  
 clear-and-show: func [duration str][
+    {
+        Poor persons animation. 
+        Blips message to screen after a pause of duration length.
+
+    }
     clear-screen
     print str 
     wait duration 
@@ -37,6 +44,7 @@ deal-cards: func [num hand][
 ]
  
 find-in: func [blk str][
+    "Finds a string value in a block. Series in series."
     foreach i blk [if find i str [return i]]
 ]
  
@@ -44,15 +52,14 @@ go-fish: func [num hand][
     either not empty? deck [
         deal-cards num hand
     ][
-        ; take from pile if deck is empty
-        append hand rejoin [trim/all form take pile] 
+        append hand rejoin [trim/all form take pile]    ;-- take from pile if deck is empty
     ]
 ]
  
 guess-from: func [hand guessed][
     {
         Randomly picks from hand minus guessed.
- 
+
         Simulates a person asking for different cards on
         their next turn if their previous guess resulted
         in a Go Fish.
@@ -71,13 +78,12 @@ make-deck: function [] [
      foreach p pip [loop 4 [append/only new-deck p]]
      return new-deck
 ]
- 
 shuffle: function [deck [block!]] [deck: random deck]
  
 ;------------- end of helper functions -----------------
  
 transfer-cards: func [
-    "Transfers cards from one hand to another"
+    "Transfers cards from player to player"
     fhand "from hand"
     thand "to hand"
     kind "rank of cards"
@@ -135,6 +141,11 @@ player-turn: func [
 ]
  
 check-for-books: func [
+    {
+        Checks for a book in a players hand.
+        Increments the players book score, and
+        discards the book from the players hand
+    }
     hand "from or to hand"
     kind "rank of cards"
     /local 
@@ -165,7 +176,7 @@ game-round: has [c p][
           -------------------
           }
  
-    if empty? chand [
+    if empty? chand [  ; computer has no more cards? fish 3 cards.
         go-fish 3 chand
         show-cards
     ]
@@ -179,7 +190,7 @@ game-round: has [c p][
           -------------------
           }
 
-    if empty? phand [
+    if empty? phand [   ;-- player has no more cards? fish 3 cards.
         go-fish 3 phand
         show-cards
     ]
