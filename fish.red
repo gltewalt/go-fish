@@ -78,9 +78,39 @@ make-deck: function [] [
      foreach p pip [loop 4 [append/only new-deck p]]
      return new-deck
 ]
+
+show-cards: does [
+    clear-and-show 0 ""
+    print [newline "Player cards:" newline sort phand newline]
+    print ["Computer books:" cbooks]
+    print ["Player books:" pbooks newline]
+]
+
 shuffle: function [deck [block!]] [deck: random deck]
  
 ;------------- end of helper functions -----------------
+
+check-for-books: func [
+    {
+        Checks for a book in a players hand.
+        Increments the players book score, and
+        discards the book from the players hand
+    }
+    hand "from or to hand"
+    kind "rank of cards"
+    /local 
+        c "collected"
+][
+    c: collect [
+        forall hand [keep find hand/1 kind]
+    ]
+    remove-each i c [none = i] 
+    if 4 = length? c [
+        either hand = phand [pbooks: pbooks + 1][cbooks: cbooks + 1]
+        remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
+        forall c [append pile c/1]  ;-- append discarded book to the pile
+    ]
+]
  
 transfer-cards: func [
     "Transfers cards from player to player"
@@ -147,35 +177,6 @@ player-turn: func [
     ]
 ]
  
-check-for-books: func [
-    {
-        Checks for a book in a players hand.
-        Increments the players book score, and
-        discards the book from the players hand
-    }
-    hand "from or to hand"
-    kind "rank of cards"
-    /local 
-        c "collected"
-][
-    c: collect [
-        forall hand [keep find hand/1 kind]
-    ]
-    remove-each i c [none = i] 
-    if 4 = length? c [
-        either hand = phand [pbooks: pbooks + 1][cbooks: cbooks + 1]
-        remove-each i hand [if find/only c i [i]]   ;-- remove book from hand
-        forall c [append pile c/1]  ;-- append discarded book to the pile
-    ]
-]
- 
-show-cards: does [
-    clear-and-show 0 ""
-    print [newline "Player cards:" newline sort phand newline]
-    print ["Computer books:" cbooks]
-    print ["Player books:" pbooks newline]
-]
- 
 game-round: has [c p][
     print {
           -------------------
@@ -207,7 +208,7 @@ game-round: has [c p][
     show-cards
 ]
  
-demo: does [
+main: does [
     deck: shuffle make-deck
     deal-cards 9 chand
     deal-cards 9 phand
@@ -220,4 +221,4 @@ demo: does [
     print [newline "Computer books:" cbooks newline "Player books:" pbooks]
 ]
 
-demo 
+main 
