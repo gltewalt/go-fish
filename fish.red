@@ -125,11 +125,18 @@ player-turn: func [
         p 
 ][
     if empty? fhand [go-fish 3 fhand]
+
+    if none? find-in thand kind [   ;-- player has to hold rank asked for
+        clear-and-show 1.0 
+        "You have to have that rank in your hand to ask for it.^/Computers turn..."
+        exit
+    ]
+
     either find-in fhand kind [
         check-for-books thand kind
         transfer-cards fhand thand kind 
         show-cards
-        if find-in thand kind [ ;-- player has to have rank asked for
+        if find-in thand kind [ 
             p: ask "Your guess: "
             either p = "x" [halt][player-turn fhand thand p]
             check-for-books thand p 
